@@ -44,3 +44,32 @@ docker run -d --name mysql-db \
 - `-e` MYSQL_ROOT_PASSWORD=1809009: Sets the root password for MySQL to "1809009". This is the password we would use to connect to the MySQL server.
 
 ![mysql](https://lab-bucket.s3.brilliant.com.bd/labthumbnail/4816d5d0-7352-4ba4-ae7a-2ef66a00db0e.png)
+
+## `Create another Container under the localhost Network`
+
+Here we will create a Ubuntu image-based container under the bridge network, then we will connect to the localhost container, and finally we will ping the `mysql-db` container.
+
+```bash
+docker run -d --name host-vm ubuntu
+docker network connect localhost host-vm
+docker container start -ia host-vm
+```
+Now, we need to install some prerequisites to use some IP utilities.
+
+```bash
+apt update
+apt install iproute2
+apt install net-tools
+apt install iputils-ping
+```
+
+## `Test Connectivity`
+
+No worries, we are good to ping now.
+```bash
+ping mysql-db -c 5
+```
+
+![ping](https://lab-bucket.s3.brilliant.com.bd/labthumbnail/f369fda1-7b8b-4876-8e20-cc529caec073.png)
+
+Yahoo! We have established communication between two containers under the same bridge network.
