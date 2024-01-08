@@ -1,5 +1,8 @@
 # docker-networking-with-containers
 
+
+## `Create an Internal Bridge Network`
+
 Let's create an internal bridge network named 'localhost' where no interface will be bound.
 
 ```bash
@@ -28,6 +31,7 @@ docker network inspect localhost
             ]
         }
 ```
+---
 
 ## `Create a MySQL Container under the localhost Network`
 
@@ -73,3 +77,54 @@ ping mysql-db -c 5
 ![ping](https://lab-bucket.s3.brilliant.com.bd/labthumbnail/f369fda1-7b8b-4876-8e20-cc529caec073.png)
 
 Yahoo! We have established communication between two containers under the same bridge network.
+
+---
+
+## `Create an Nginx Container under the localhost Network`
+
+```bash
+docker run -d --name private-nginx -p 8080:80 --network localhost nginx
+```
+- `-d`: Runs the container in detached mode, meaning it runs in the background.
+- `--name` private-nginx: Assigns the name "private-nginx" to the Docker container. This provides a human-readable identifier for the container.
+
+- `-p` 8080:80: Maps port 8080 on the host to port 80 on the container.
+
+- `--network` localhost: Connects the container to the Docker bridge network named "localhost." This will allows the Nginx container to communicate with other containers on the "localhost" network.
+
+## `Test Connectivity`
+
+Let's try with `curl` utility to get a response.
+
+```bash
+curl localhost:8080
+```
+***Expected Output***
+```
+curl: (7) Failed to connect to localhost port 8080: Connection refused
+```
+
+Oppss! We are not getting anything back, as expected. Right?
+
+## `Root Cause`
+The `localhost` network is an internal network. It's not bound to any network interface on the Docker host.
+
+## `Solution`
+We can inspect the Docker container, grep the assigned private IP address, and then curl with that to get the result.
+
+## `Inspect Docker Container to get IP`
+```bash
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' private-nginx
+```
+***Expected Output***
+```
+172.20.0.3
+```
+Now, we are good to curl again.
+```bash
+curl 172.20.0.3:80
+```
+![bingo](https://lab-bucket.s3.brilliant.com.bd/labthumbnail/1f0fc191-be7d-4a09-8a7c-b43215bd7971.png)
+
+Bingo! We are getting response from nginx server.
+---
