@@ -94,7 +94,7 @@ docker run -d --name private-nginx -p 8080:80 --network localhost nginx
 
 ## `Test Connectivity`
 
-Let's try with `curl` utility to get a response.
+Let's try with `curl` utility to get a response. From root ns.
 
 ```bash
 curl localhost:8080
@@ -120,11 +120,11 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pri
 ```
 172.20.0.3
 ```
-Now, we are good to curl again.
+Now, we are good to curl again. From root ns.
 ```bash
 curl 172.20.0.3:80
 ```
-![bingo](https://lab-bucket.s3.brilliant.com.bd/labthumbnail/1f0fc191-be7d-4a09-8a7c-b43215bd7971.png)
+![bingo](https://lab-bucket.s3.brilliant.com.bd/labthumbnail/a4e192f5-20b5-4c97-b8ee-b9b55830edc8.png)
 
 Bingo! We are getting response from nginx server.
 ---
